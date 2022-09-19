@@ -1,0 +1,11 @@
+query Characters {
+  characters(page: 1, filter: { name: "ant" }) {
+    results {
+      gender
+      name
+      id
+      status
+      image
+    }
+  }
+}
