@@ -5,6 +5,7 @@ import { AppShell, Container, MantineProvider } from "@mantine/core";
 import { Header } from "components/Header";
 import CharacterById from "./character/[id]";
 import "../styles/global.css"; // <- scroll issue on modal opening https://github.com/vercel/next.js/issues/28778#issuecomment-1065958281
+import { Navbar } from "components/Navbar";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               ]}
             />
           }
+          navbar={<Navbar />}
         >
           <Container>
             <Component {...pageProps} />
