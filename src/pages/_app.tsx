@@ -2,7 +2,8 @@ import type { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import theme from "theme/theme";
-import { MantineProvider } from "@mantine/core";
+import { AppShell, Container, MantineProvider } from "@mantine/core";
+import { Header } from "components/Header";
 
 const queryClient = new QueryClient();
 
@@ -16,9 +17,25 @@ function MyApp({ Component, pageProps }: AppProps) {
         theme={{
           /** Put your mantine theme override here */
           colorScheme: "dark",
+          fontFamily: "Quicksand, sans-serif",
         }}
       >
-        <Component {...pageProps} />
+        <AppShell
+          header={
+            <Header
+              links={[
+                {
+                  label: "Characters",
+                  link: "/characters",
+                },
+              ]}
+            />
+          }
+        >
+          <Container>
+            <Component {...pageProps} />
+          </Container>
+        </AppShell>
       </MantineProvider>
     </QueryClientProvider>
   );

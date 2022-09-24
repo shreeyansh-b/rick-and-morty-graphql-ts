@@ -1,0 +1,1 @@
+export { CharactersByPage } from "./CharactersByPage";

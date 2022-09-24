@@ -1,4 +1,3 @@
-import styled from "@emotion/styled";
 import {
   createStyles,
   Header,
@@ -7,7 +6,6 @@ import {
   Image,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import logoSrc from "@/assets/svgs/Rick_and_Morty.svg";
 import Link from "next/link";
 
 const useStyles = createStyles((theme) => ({
@@ -77,7 +75,11 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
           <Group>
             <Link key="home" href="/">
               <a>
-                <Image width={110} src={logoSrc.src} alt="Rick And Morty" />
+                <Image
+                  width={110}
+                  src={"/assets/svgs/Rick_and_Morty.svg"}
+                  alt="Rick And Morty"
+                />
               </a>
             </Link>
           </Group>

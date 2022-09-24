@@ -5,11 +5,11 @@ export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K]
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 
-function fetcher<TData, TVariables>(endpoint: string, requestInit: RequestInit, query: string, variables?: TVariables) {
+function fetcher<TData, TVariables>(query: string, variables?: TVariables) {
   return async (): Promise<TData> => {
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      ...requestInit,
+    const res = await fetch("https://rickandmortyapi.com/graphql", {
+    method: "POST",
+    ...({"headers":{"content-type":"application/json"}}),
       body: JSON.stringify({ query, variables }),
     });
 
@@ -219,35 +219,44 @@ export type QueryLocationsByIdsArgs = {
   ids: Array<Scalars['ID']>;
 };
 
-export type CharactersQueryVariables = Exact<{ [key: string]: never; }>;
+export type CharacterQueryVariables = Exact<{
+  page?: InputMaybe<Scalars['Int']>;
+  name?: InputMaybe<Scalars['String']>;
+}>;
 
 
-export type CharactersQuery = { __typename?: 'Query', characters?: { __typename?: 'Characters', results?: Array<{ __typename?: 'Character', gender?: string | null, name?: string | null, id?: string | null, status?: string | null, image?: string | null } | null> | null } | null };
+export type CharacterQuery = { __typename?: 'Query', characters?: { __typename?: 'Characters', results?: Array<{ __typename?: 'Character', gender?: string | null, name?: string | null, id?: string | null, status?: string | null, image?: string | null, species?: string | null } | null> | null, info?: { __typename?: 'Info', count?: number | null, pages?: number | null, next?: number | null, prev?: number | null } | null } | null };
 
 
-export const CharactersDocument = `
-    query Characters {
-  characters(page: 1, filter: {name: "ant"}) {
+export const CharacterDocument = `
+    query Character($page: Int, $name: String) {
+  characters(page: $page, filter: {name: $name}) {
     results {
       gender
       name
       id
       status
       image
+      species
+    }
+    info {
+      count
+      pages
+      next
+      prev
     }
   }
 }
     `;
-export const useCharactersQuery = <
-      TData = CharactersQuery,
+export const useCharacterQuery = <
+      TData = CharacterQuery,
       TError = unknown
     >(
-      dataSource: { endpoint: string, fetchParams?: RequestInit },
-      variables?: CharactersQueryVariables,
-      options?: UseQueryOptions<CharactersQuery, TError, TData>
+      variables?: CharacterQueryVariables,
+      options?: UseQueryOptions<CharacterQuery, TError, TData>
     ) =>
-    useQuery<CharactersQuery, TError, TData>(
-      variables === undefined ? ['Characters'] : ['Characters', variables],
-      fetcher<CharactersQuery, CharactersQueryVariables>(dataSource.endpoint, dataSource.fetchParams || {}, CharactersDocument, variables),
+    useQuery<CharacterQuery, TError, TData>(
+      variables === undefined ? ['Character'] : ['Character', variables],
+      fetcher<CharacterQuery, CharacterQueryVariables>(CharacterDocument, variables),
       options
     );

@@ -7,4 +7,10 @@ generates:
       - "typescript"
       - "typescript-operations"
       - "typescript-react-query"
+config:
+  fetcher:
+    endpoint: "https://rickandmortyapi.com/graphql" # @ https://the-guild.dev/graphql/codegen/plugins/typescript/typescript-react-query#using-fetch-with-codegen-configuration
+    fetchParams:
+      headers:
+        content-type: "application/json" # <- important else it'll not work
 
