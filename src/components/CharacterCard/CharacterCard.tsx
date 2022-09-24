@@ -1,12 +1,14 @@
 import React from "react";
 import { Character } from "generated/graphql";
 import { Badge, Card, Group, Image, Text } from "@mantine/core";
+import { useRouter } from "next/router";
+import { getCharacterPageRoute, getCharacterSearchPageRoute } from "helpers";
 
-type GenderType = "Female" | "Male" | "Genderless" | "unknown";
+export type GenderType = "Female" | "Male" | "Genderless" | "unknown";
 
-type StatusType = "Alive" | "Dead" | "unknown";
+export type StatusType = "Alive" | "Dead" | "unknown";
 
-const getColorFromGender = ({ gender }: { gender: GenderType }) => {
+export const getColorFromGender = ({ gender }: { gender: GenderType }) => {
   switch (gender) {
     case "Male":
       return "blue.3";
@@ -21,7 +23,7 @@ const getColorFromGender = ({ gender }: { gender: GenderType }) => {
   }
 };
 
-const getColorFromStatus = ({ status }: { status: StatusType }) => {
+export const getColorFromStatus = ({ status }: { status: StatusType }) => {
   switch (status) {
     case "Alive":
       return "green.7";
@@ -42,10 +44,29 @@ export const CharacterCard: React.FC<Character> = ({
   species,
   status,
 }) => {
+  const router = useRouter();
+  const { asPath } = router;
+
+  const onCardClickHandler = ({ id }: { id: number }) => {
+    router.push({
+      pathname: asPath,
+      query: getCharacterSearchPageRoute({ id }),
+    });
+  };
+
   return (
-    <Card sx={{ height: "100%" }} shadow="sm" p="lg" radius="md" withBorder>
+    <Card
+      onClick={() => {
+        onCardClickHandler({ id: Number(id) });
+      }}
+      sx={{ height: "100%" }}
+      shadow="sm"
+      p="lg"
+      radius="md"
+      withBorder
+    >
       <Card.Section>
-        <Image src={image ?? ""} alt={name ?? ""} />
+        <Image src={image ?? ""} alt={name ?? ""} withPlaceholder />
       </Card.Section>
 
       <Text

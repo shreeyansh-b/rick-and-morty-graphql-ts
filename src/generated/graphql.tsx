@@ -220,16 +220,52 @@ export type QueryLocationsByIdsArgs = {
 };
 
 export type CharacterQueryVariables = Exact<{
+  id: Scalars['ID'];
+}>;
+
+
+export type CharacterQuery = { __typename?: 'Query', character?: { __typename?: 'Character', name?: string | null, status?: string | null, species?: string | null, type?: string | null, gender?: string | null, image?: string | null, episode: Array<{ __typename?: 'Episode', id?: string | null, name?: string | null, episode?: string | null } | null> } | null };
+
+export type CharactersQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']>;
   name?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type CharacterQuery = { __typename?: 'Query', characters?: { __typename?: 'Characters', results?: Array<{ __typename?: 'Character', gender?: string | null, name?: string | null, id?: string | null, status?: string | null, image?: string | null, species?: string | null } | null> | null, info?: { __typename?: 'Info', count?: number | null, pages?: number | null, next?: number | null, prev?: number | null } | null } | null };
+export type CharactersQuery = { __typename?: 'Query', characters?: { __typename?: 'Characters', results?: Array<{ __typename?: 'Character', gender?: string | null, name?: string | null, id?: string | null, status?: string | null, image?: string | null, species?: string | null } | null> | null, info?: { __typename?: 'Info', count?: number | null, pages?: number | null, next?: number | null, prev?: number | null } | null } | null };
 
 
 export const CharacterDocument = `
-    query Character($page: Int, $name: String) {
+    query Character($id: ID!) {
+  character(id: $id) {
+    name
+    status
+    species
+    type
+    gender
+    image
+    episode {
+      id
+      name
+      episode
+    }
+  }
+}
+    `;
+export const useCharacterQuery = <
+      TData = CharacterQuery,
+      TError = unknown
+    >(
+      variables: CharacterQueryVariables,
+      options?: UseQueryOptions<CharacterQuery, TError, TData>
+    ) =>
+    useQuery<CharacterQuery, TError, TData>(
+      ['Character', variables],
+      fetcher<CharacterQuery, CharacterQueryVariables>(CharacterDocument, variables),
+      options
+    );
+export const CharactersDocument = `
+    query Characters($page: Int, $name: String) {
   characters(page: $page, filter: {name: $name}) {
     results {
       gender
@@ -248,15 +284,15 @@ export const CharacterDocument = `
   }
 }
     `;
-export const useCharacterQuery = <
-      TData = CharacterQuery,
+export const useCharactersQuery = <
+      TData = CharactersQuery,
       TError = unknown
     >(
-      variables?: CharacterQueryVariables,
-      options?: UseQueryOptions<CharacterQuery, TError, TData>
+      variables?: CharactersQueryVariables,
+      options?: UseQueryOptions<CharactersQuery, TError, TData>
     ) =>
-    useQuery<CharacterQuery, TError, TData>(
-      variables === undefined ? ['Character'] : ['Character', variables],
-      fetcher<CharacterQuery, CharacterQueryVariables>(CharacterDocument, variables),
+    useQuery<CharactersQuery, TError, TData>(
+      variables === undefined ? ['Characters'] : ['Characters', variables],
+      fetcher<CharactersQuery, CharactersQueryVariables>(CharactersDocument, variables),
       options
     );

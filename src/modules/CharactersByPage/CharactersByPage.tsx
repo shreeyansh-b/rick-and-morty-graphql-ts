@@ -1,7 +1,7 @@
 import {
   Characters as CharactersType,
   Info,
-  useCharacterQuery,
+  useCharactersQuery,
 } from "generated/graphql";
 import { Characters } from "modules/characters";
 import { Center } from "@mantine/core";
@@ -14,7 +14,7 @@ const CharactersByPage: NextPage = () => {
   const router = useRouter();
   const { page = 1 } = router.query;
 
-  const { data, isLoading } = useCharacterQuery({ page: +page as number });
+  const { data, isLoading } = useCharactersQuery({ page: +page as number });
 
   const { results } = (data?.characters as CharactersType) ?? {};
   const info = (data?.characters?.info as Info) ?? {};

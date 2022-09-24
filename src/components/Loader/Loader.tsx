@@ -19,7 +19,13 @@ const generateRandomInteger = (min: number, max: number) => {
 export const Loader: React.FC<{}> = () => {
   return (
     <Center
-      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+      mt="lg"
     >
       <Image
         src={GIFS_SRC[generateRandomInteger(0, GIFS_SRC.length - 1)]}

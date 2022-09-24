@@ -1,4 +1,4 @@
-query Character($page: Int, $name: String) {
+query Characters($page: Int, $name: String) {
   characters(page: $page, filter: { name: $name }) {
     results {
       gender

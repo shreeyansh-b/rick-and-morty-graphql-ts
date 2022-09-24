@@ -7,7 +7,7 @@ import {
 import { CharacterCard } from "components/CharacterCard";
 import { Center, Container, Grid, Pagination } from "@mantine/core";
 import { useRouter } from "next/router";
-import { getCharacterPageRoute } from "helpers";
+import { getCharactersPageRoute } from "helpers";
 
 export const Characters: React.FC<CharactersProps> = ({
   results = [],
@@ -19,7 +19,7 @@ export const Characters: React.FC<CharactersProps> = ({
   const { pages } = (info as Info) ?? {};
 
   const pageChangeHandler = (page: number) => {
-    router.push(getCharacterPageRoute({ page }));
+    router.push(getCharactersPageRoute({ page }));
   };
 
   return (
