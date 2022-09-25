@@ -13,3 +13,5 @@ https://rick-and-morty-graphql-ts-te5x.vercel.app/
 5. code gen
 6. mantine UI
 7. emotion
+8. storybook
+9. vercel CI/CD
