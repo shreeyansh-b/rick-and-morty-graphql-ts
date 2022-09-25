@@ -12,9 +12,14 @@ import { Loader } from "components/Loader/Loader";
 
 const CharactersByPage: NextPage = () => {
   const router = useRouter();
-  const { page = 1 } = router.query;
+  const { page = 1, name = "", gender = "", status = "" } = router.query;
 
-  const { data, isLoading } = useCharactersQuery({ page: +page as number });
+  const { data, isLoading } = useCharactersQuery({
+    page: +page as number,
+    name: String(name) ?? "",
+    gender: String(gender) ?? "",
+    status: String(status) ?? "",
+  });
 
   const { results } = (data?.characters as CharactersType) ?? {};
   const info = (data?.characters?.info as Info) ?? {};

@@ -2,7 +2,12 @@ import React from "react";
 import { Character } from "generated/graphql";
 import { Badge, Card, Group, Image, Text } from "@mantine/core";
 import { useRouter } from "next/router";
-import { getCharacterPageRoute, getCharacterSearchPageRoute } from "helpers";
+import {
+  filtersQueryGenerator,
+  getCharacterPageRoute,
+  getCharacterSearchPageRoute,
+} from "helpers";
+import queryString from "query-string";
 
 export type GenderType = "Female" | "Male" | "Genderless" | "unknown";
 
@@ -45,12 +50,14 @@ export const CharacterCard: React.FC<Character> = ({
   status,
 }) => {
   const router = useRouter();
-  const { asPath } = router;
+  const { query, asPath } = router;
+  const pathname = asPath.split("?")[0]; // @https://github.com/vercel/next.js/discussions/33243#discussioncomment-2576346
 
   const onCardClickHandler = ({ id }: { id: number }) => {
+    const urlQuery = filtersQueryGenerator({ ...query, id: String(id) });
     router.push({
-      pathname: asPath,
-      query: getCharacterSearchPageRoute({ id }),
+      pathname: pathname,
+      query: urlQuery,
     });
   };
 

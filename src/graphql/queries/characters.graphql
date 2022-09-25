@@ -1,11 +1,15 @@
-query Characters($page: Int, $name: String) {
-  characters(page: $page, filter: { name: $name }) {
+query Characters($page: Int, $gender: String, $status: String, $name: String) {
+  characters(
+    page: $page
+    filter: { gender: $gender, status: $status, name: $name }
+  ) {
     results {
       gender
       name
       id
       status
       image
+      status
       species
     }
     info {

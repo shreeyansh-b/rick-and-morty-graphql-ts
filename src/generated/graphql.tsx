@@ -228,6 +228,8 @@ export type CharacterQuery = { __typename?: 'Query', character?: { __typename?: 
 
 export type CharactersQueryVariables = Exact<{
   page?: InputMaybe<Scalars['Int']>;
+  gender?: InputMaybe<Scalars['String']>;
+  status?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
 }>;
 
@@ -265,14 +267,15 @@ export const useCharacterQuery = <
       options
     );
 export const CharactersDocument = `
-    query Characters($page: Int, $name: String) {
-  characters(page: $page, filter: {name: $name}) {
+    query Characters($page: Int, $gender: String, $status: String, $name: String) {
+  characters(page: $page, filter: {gender: $gender, status: $status, name: $name}) {
     results {
       gender
       name
       id
       status
       image
+      status
       species
     }
     info {

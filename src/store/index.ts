@@ -1,21 +1,6 @@
 import { GenderType, StatusType } from "components/CharacterCard/CharacterCard";
 import create, { StateCreator } from "zustand";
-
-interface ModalSlice {
-  isOpen: boolean;
-  showModal: () => void;
-  hideModal: () => void;
-}
-const createModalSlice: StateCreator<ModalSlice, [], [], ModalSlice> = (
-  set
-) => ({
-  isOpen: false,
-  showModal: () =>
-    set(() => ({
-      isOpen: true,
-    })),
-  hideModal: () => set(() => ({ isOpen: false })),
-});
+import { devtools } from "zustand/middleware";
 
 interface FiltersSlice {
   gender: string | undefined;
@@ -24,21 +9,25 @@ interface FiltersSlice {
   addGenderFilter: ({ gender }: { gender: GenderType }) => void;
   addStatusFilter: ({ status }: { status: StatusType }) => void;
   addNameFilter: ({ name }: { name: string }) => void;
+  clearAllFilters: () => void;
 }
-const createFiltersSlice: StateCreator<FiltersSlice, [], [], FiltersSlice> = (
-  set
-) => ({
+const createFiltersSlice: StateCreator<
+  FiltersSlice,
+  [["zustand/devtools", never]],
+  [],
+  FiltersSlice
+> = (set) => ({
   gender: "",
   status: "",
   name: "",
   addGenderFilter: ({ gender }) => set((state) => ({ gender: gender })),
   addStatusFilter: ({ status }) => set((state) => ({ status: status })),
   addNameFilter: ({ name }) => set((state) => ({ name: name })),
+  clearAllFilters: () => set(() => ({ name: "", gender: "", status: "" })),
 });
 
-export const useBoundStore = create<
-  ReturnType<typeof createModalSlice> & ReturnType<typeof createFiltersSlice>
->()((...a) => ({
-  ...createModalSlice(...a),
-  ...createFiltersSlice(...a),
-}));
+export const useBoundStore = create<ReturnType<typeof createFiltersSlice>>()(
+  devtools((...a) => ({
+    ...createFiltersSlice(...a),
+  }))
+);

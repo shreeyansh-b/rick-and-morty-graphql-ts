@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Badge,
   Container,
@@ -15,10 +15,77 @@ import {
   StatusType,
 } from "components/CharacterCard/CharacterCard";
 import { genders, statuses } from "constants/ProjectConstants";
+import { useBoundStore } from "store";
+import { filtersQueryGenerator } from "helpers";
+import { useRouter } from "next/router";
+import { ParsedUrlQuery } from "querystring";
+
+const VALID_KEYS_ARRAY = ["gender", "status"];
 
 export const Navbar: React.FC<{}> = () => {
   const gendersArray = Object.values(genders);
   const statusesArray = Object.values(statuses);
+
+  const { addGenderFilter, addStatusFilter, clearAllFilters } = useBoundStore();
+
+  const router = useRouter();
+  const { asPath, query } = router;
+  let pathname = asPath.split("?")[0]; // @https://github.com/vercel/next.js/discussions/33243#discussioncomment-2576346
+
+  pathname = pathname.split("/page/")[1]
+    ? pathname.split("/page/")[0] + "/page/1"
+    : pathname;
+
+  const setQueryInStore = ({ query }: { query: ParsedUrlQuery }) => {
+    const queryKeysArray = Object.keys(query); // <- this is from URL
+
+    VALID_KEYS_ARRAY.forEach((validKey) => {
+      // checking if url keys contain gender or status
+      if (queryKeysArray.includes(validKey)) {
+        if (validKey === VALID_KEYS_ARRAY[0]) {
+          addGenderFilter({ gender: query[VALID_KEYS_ARRAY[0]] as GenderType });
+        }
+        if (validKey === VALID_KEYS_ARRAY[1]) {
+          addStatusFilter({ status: query[VALID_KEYS_ARRAY[1]] as StatusType });
+        }
+      }
+    });
+  };
+
+  const clearQueryInStore = ({ query }: { query: ParsedUrlQuery }) => {
+    const queryKeysArray = Object.keys(query); // <- this is from URL
+    if (
+      queryKeysArray.some((queryKey) => !VALID_KEYS_ARRAY.includes(queryKey)) ||
+      !queryKeysArray.length
+    ) {
+      clearAllFilters();
+    }
+  };
+
+  const genderFilterClickHandler = ({ gender }: { gender: GenderType }) => {
+    const urlQuery = filtersQueryGenerator({ ...query, gender }); // <- spreading current url query here, so that new filter gets appended to current query else it'll replace the entire url query
+
+    //   replacing page as 0, cause there can only be 1 page for specific filter, so resetting it to 0
+
+    router.push({
+      pathname: pathname,
+      query: urlQuery,
+    });
+  };
+
+  const statusFilterClickHandler = ({ status }: { status: StatusType }) => {
+    const urlQuery = filtersQueryGenerator({ ...query, status });
+    router.push({
+      pathname: pathname,
+      query: urlQuery,
+    });
+  };
+
+  useEffect(() => {
+    setQueryInStore({ query });
+    clearQueryInStore({ query });
+  }, [query]);
+
   return (
     <MantineNavbar width={{ base: 300 }} p={"md"}>
       <Container sx={{ display: "flex", flexDirection: "column" }}>
@@ -43,6 +110,11 @@ export const Navbar: React.FC<{}> = () => {
                 variant="light"
                 size="sm"
                 sx={{ cursor: "pointer" }}
+                onClick={() =>
+                  genderFilterClickHandler({
+                    gender: (gender as GenderType) ?? "",
+                  })
+                }
               >
                 {gender}
               </Badge>
@@ -69,6 +141,11 @@ export const Navbar: React.FC<{}> = () => {
                 size="sm"
                 key={`status_${index}_${status}`}
                 sx={{ cursor: "pointer" }}
+                onClick={() => {
+                  statusFilterClickHandler({
+                    status: (status as StatusType) ?? "",
+                  });
+                }}
               >
                 {status}
               </Badge>
