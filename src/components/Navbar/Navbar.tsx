@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import {
   Badge,
+  Button,
   Container,
   Divider,
   Group,
@@ -26,7 +27,8 @@ export const Navbar: React.FC<{}> = () => {
   const gendersArray = Object.values(genders);
   const statusesArray = Object.values(statuses);
 
-  const { addGenderFilter, addStatusFilter, clearAllFilters } = useBoundStore();
+  const { addGenderFilter, addStatusFilter, clearAllFilters, gender, status } =
+    useBoundStore();
 
   const router = useRouter();
   const { asPath, query } = router;
@@ -55,18 +57,23 @@ export const Navbar: React.FC<{}> = () => {
   const clearQueryInStore = ({ query }: { query: ParsedUrlQuery }) => {
     const queryKeysArray = Object.keys(query); // <- this is from URL
     if (
-      queryKeysArray.some((queryKey) => !VALID_KEYS_ARRAY.includes(queryKey)) ||
+      !queryKeysArray.some((queryKey) => VALID_KEYS_ARRAY.includes(queryKey)) ||
       !queryKeysArray.length
     ) {
       clearAllFilters();
     }
   };
 
+  const clearQueryHandler = () => {
+    router.push({
+      pathname: pathname,
+    });
+  };
+
   const genderFilterClickHandler = ({ gender }: { gender: GenderType }) => {
     const urlQuery = filtersQueryGenerator({ ...query, gender }); // <- spreading current url query here, so that new filter gets appended to current query else it'll replace the entire url query
 
     //   replacing page as 0, cause there can only be 1 page for specific filter, so resetting it to 0
-
     router.push({
       pathname: pathname,
       query: urlQuery,
@@ -89,10 +96,65 @@ export const Navbar: React.FC<{}> = () => {
   return (
     <MantineNavbar width={{ base: 300 }} p={"md"}>
       <Container sx={{ display: "flex", flexDirection: "column" }}>
-        <Text component="p" size={"md"} weight={"bold"}>
-          Filters
-        </Text>
-        <Divider sx={{ width: "100%" }} />
+        <Container
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: 0,
+            width: "100%",
+          }}
+        >
+          <Text component="p" size={"md"} weight={"bold"}>
+            Filters
+          </Text>
+          {Boolean(status || gender) && (
+            <Button variant="subtle" compact onClick={clearQueryHandler}>
+              Clear
+            </Button>
+          )}
+        </Container>
+        <Group sx={{ gap: "10px" }}>
+          {Boolean(gender) && (
+            <Badge
+              color={getColorFromGender({
+                gender: (gender as GenderType) ?? "",
+              })}
+              variant="light"
+              size="sm"
+              sx={{ cursor: "pointer" }}
+              onClick={() =>
+                genderFilterClickHandler({
+                  gender: (gender as GenderType) ?? "",
+                })
+              }
+            >
+              {gender}
+            </Badge>
+          )}
+
+          {Boolean(status) && (
+            <Badge
+              color={getColorFromStatus({
+                status: (status as StatusType) ?? "",
+              })}
+              variant="light"
+              size="sm"
+              sx={{ cursor: "pointer" }}
+              onClick={() => {
+                statusFilterClickHandler({
+                  status: (status as StatusType) ?? "",
+                });
+              }}
+            >
+              {status}
+            </Badge>
+          )}
+        </Group>
+        <Divider
+          mt={Boolean(status || gender) ? "md" : 0}
+          sx={{ width: "100%" }}
+        />
 
         <Text component="p" size={"sm"} weight={"bold"}>
           Gender
@@ -130,7 +192,7 @@ export const Navbar: React.FC<{}> = () => {
         <Group sx={{ gap: "10px" }}>
           {statusesArray.map((status, index) => (
             <Tooltip
-              key={`gender_${index}_${status}`}
+              key={`status_${index}_${status}`}
               label={`Filter by ${status}`}
             >
               <Badge
@@ -139,7 +201,6 @@ export const Navbar: React.FC<{}> = () => {
                 })}
                 variant="light"
                 size="sm"
-                key={`status_${index}_${status}`}
                 sx={{ cursor: "pointer" }}
                 onClick={() => {
                   statusFilterClickHandler({

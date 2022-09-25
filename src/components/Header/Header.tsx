@@ -4,9 +4,68 @@ import {
   Autocomplete,
   Group,
   Image,
+  Avatar,
+  Text,
+  Paper,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useDebouncedValue } from "@mantine/hooks";
+import {
+  Character,
+  Characters as CharactersType,
+  useCharactersQuery,
+} from "generated/graphql";
+import { filtersQueryGenerator } from "helpers";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { forwardRef, ReactNode } from "react";
+import { useBoundStore } from "store";
+
+/* eslint-disable react/display-name */
+const AutoCompleteItem = forwardRef<HTMLDivElement, Character>(
+  ({ image, name, id }: Character, ref) => {
+    const router = useRouter();
+    const { query, asPath } = router;
+    const pathname = asPath.split("?")[0]; // @https://github.com/vercel/next.js/discussions/33243#discussioncomment-2576346
+
+    const onCardClickHandler = ({ id }: { id: number }) => {
+      const urlQuery = filtersQueryGenerator({ ...query, id: String(id) });
+      router.push({
+        pathname: pathname,
+        query: urlQuery,
+      });
+    };
+
+    return (
+      <div
+        style={{ cursor: "pointer" }}
+        ref={ref}
+        onClick={() => onCardClickHandler({ id: Number(id) ?? 0 })}
+      >
+        <Paper>
+          <Group noWrap>
+            <Avatar src={image} />
+
+            <div>
+              <Text
+                component="p"
+                sx={{
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  width: "100%",
+                  whiteSpace: "nowrap",
+                }}
+                size={"sm"}
+                weight={"bold"}
+              >
+                {name}
+              </Text>
+            </div>
+          </Group>
+        </Paper>
+      </div>
+    );
+  }
+);
 
 const useStyles = createStyles((theme) => ({
   header: {
@@ -19,6 +78,7 @@ const useStyles = createStyles((theme) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    width: "100%",
   },
 
   links: {
@@ -31,6 +91,7 @@ const useStyles = createStyles((theme) => ({
     [theme.fn.smallerThan("xs")]: {
       display: "none",
     },
+    width: "250px",
   },
 
   link: {
@@ -68,10 +129,29 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
     </Link>
   ));
 
+  const { name, addNameFilter } = useBoundStore();
+
+  const [debouncedName] = useDebouncedValue<string>(name ?? "", 200);
+
+  const { data, isLoading } = useCharactersQuery({
+    name: debouncedName,
+  });
+
+  const { results } = (data?.characters as CharactersType) ?? {};
+
+  const resultsDataArray =
+    results?.map((result) => {
+      const { id } = (result as Character) ?? {};
+      return {
+        value: id ?? "",
+        ...result,
+      };
+    }) ?? [];
+
   return (
     <Header height={56} className={classes.header} mb={120}>
       <div className={classes.inner}>
-        <Group>
+        <Group sx={{ width: "100%", justifyContent: "space-between" }}>
           <Group>
             <Link key="home" href="/">
               <a>
@@ -85,16 +165,12 @@ export function HeaderSearch({ links }: HeaderSearchProps) {
           </Group>
           <Autocomplete
             className={classes.search}
-            placeholder="Search"
-            data={[
-              "React",
-              "Angular",
-              "Vue",
-              "Next.js",
-              "Riot.js",
-              "Svelte",
-              "Blitz.js",
-            ]}
+            placeholder="Search character"
+            data={resultsDataArray ?? []}
+            onChange={(value) => addNameFilter({ name: value })}
+            itemComponent={AutoCompleteItem}
+            value={name}
+            filter={(value, item) => true} // <- @ https://github.com/mantinedev/mantine/discussions/822#discussioncomment-2146355
           />
           <Group ml={50} spacing={5} className={classes.links}>
             {items}

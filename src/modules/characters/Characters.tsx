@@ -19,7 +19,12 @@ export const Characters: React.FC<CharactersProps> = ({
   const { pages } = (info as Info) ?? {};
 
   const pageChangeHandler = (page: number) => {
-    router.push(getCharactersPageRoute({ page }));
+    const query = router.query;
+    delete query.page;
+    router.push({
+      pathname: getCharactersPageRoute({ page }),
+      query: query,
+    });
   };
 
   return (

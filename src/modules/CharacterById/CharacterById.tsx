@@ -27,11 +27,7 @@ const CharacterById: NextPage = () => {
   if (isLoading) {
     // isLoading will only be true for the "initial" loading when you have no data yet
     // Todo: refactor
-    return (
-      <Center>
-        <Loader />
-      </Center>
-    );
+    return null;
   }
   if (isError || !data?.character) {
     return null;
