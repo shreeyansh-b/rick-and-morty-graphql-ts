@@ -9,5 +9,5 @@ export default {
 } as ComponentMeta<typeof CharacterModal>;
 
 export const Primary: ComponentStory<typeof CharacterModal> = () => (
-  <CharacterModal></CharacterModal>
+  <CharacterModal episode={[]}></CharacterModal>
 );

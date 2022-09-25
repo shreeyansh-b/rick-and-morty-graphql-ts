@@ -22,5 +22,5 @@ export const Primary: ComponentStory<typeof CharacterCard> = () => {
     image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
     species: "Human",
   };
-  return <CharacterCard {...args}></CharacterCard>;
+  return <CharacterCard episode={[]} {...args}></CharacterCard>;
 };

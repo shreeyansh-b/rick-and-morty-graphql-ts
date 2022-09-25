@@ -15,7 +15,7 @@ import {
   getColorFromStatus,
   StatusType,
 } from "components/CharacterCard/CharacterCard";
-import { EpisodesScrollArea } from "components/EpisodesScrollArea/EpisodesScrollArea";
+import { EpisodesScrollArea } from "components/EpisodesScrollArea";
 import { Character, Episode } from "generated/graphql";
 import { useRouter } from "next/router";
 import React from "react";
