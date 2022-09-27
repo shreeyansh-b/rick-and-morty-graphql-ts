@@ -9,9 +9,10 @@ https://rick-and-morty-graphql-ts-te5x.vercel.app/
 1. typescript
 2. graphQL
 3. nextJS
-4. react query
-5. code gen
-6. mantine UI
-7. emotion
-8. storybook
-9. vercel CI/CD
+4. zustand
+5. react query
+6. code gen
+7. mantine UI
+8. emotion
+9. storybook
+10. vercel CI/CD
